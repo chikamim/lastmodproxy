@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/elazarl/goproxy"
@@ -16,8 +17,8 @@ type LastModifiedHandler struct {
 	Index *Index
 }
 
-func NewLastModifiedHandler(store TimeStorer, config *Config) *LastModifiedHandler {
-	index := NewIndex(store, config)
+func NewLastModifiedHandler(store TimeStorer, websites []WebSite, force bool) *LastModifiedHandler {
+	index := NewIndex(store, websites, force)
 	return &LastModifiedHandler{index}
 }
 
@@ -25,7 +26,7 @@ func (h *LastModifiedHandler) OnRequest(req *http.Request, ctx *goproxy.ProxyCtx
 	url := req.URL.String()
 	lastModified, err := h.Index.GetLastModified(url)
 	if err == nil {
-		log.Printf("Index GetLastModified - %v\n", lastModified)
+		log.Printf("Return NotModified: %v\n", lastModified)
 		return req, goproxy.NewResponse(req,
 			goproxy.ContentTypeText, http.StatusNotModified,
 			"304")
@@ -34,21 +35,38 @@ func (h *LastModifiedHandler) OnRequest(req *http.Request, ctx *goproxy.ProxyCtx
 }
 
 func (h *LastModifiedHandler) OnResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
+	if !strings.Contains(resp.Header.Get("Content-Type"), "text/html") {
+		return resp
+	}
+
 	url := ctx.Req.URL.String()
+	log.Printf("Request: %v\n", url)
 	var buf bytes.Buffer
 	writer := bufio.NewWriter(&buf)
 	io.Copy(writer, resp.Body)
-	resp.Body = ioutil.NopCloser(bufio.NewReader(&buf))
+	bin := bytes.Replace(buf.Bytes(), []byte("nofollow"), []byte(""), -1)
+	bin = bytes.Replace(bin, []byte("noindex"), []byte(""), -1)
+	bin = bytes.Replace(bin, []byte("canonical"), []byte(""), -1)
+	resp.Body = ioutil.NopCloser(bytes.NewReader(bin))
 
 	lastModified, err := h.Index.SetLastModified(url, buf.Bytes())
 	if err != nil {
-		log.Printf("Index SetLastModified error - %v\n", err)
+		log.Printf("SetLastModified error: %v\n", err)
+		return resp
 	}
 
-	origin := resp.Header.Get("Last-Modified")
-	if len(origin) == 0 {
-		log.Printf("Set New LastModified - %v - %v", url, lastModified.Format(time.RFC1123))
-		resp.Header.Set("Last-Modified", lastModified.Format(time.RFC1123))
+	if lastModified.Equal(time.Time{}) {
+		log.Println("LastModified Not Found")
+		return resp
 	}
+
+	if len(resp.Header.Get("Last-Modified")) == 0 {
+		log.Printf("LastModified Found: %v\n", lastModified.Format(time.RFC1123))
+		resp.Header.Set("Last-Modified", lastModified.Format(time.RFC1123))
+		resp.Header.Set("Cache-Control", "private")
+	} else {
+		log.Println("Has LastModified Response")
+	}
+
 	return resp
 }

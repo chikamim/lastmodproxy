@@ -1,0 +1,7 @@
+websites:
+  - url_filter: example.com
+    date_match: "title=\"(\\d{4}\\-\\d{2}\\-\\d{2} \\d{2}:\\d{2})\">([^<]+)</a>"
+    date_layout: "2006-01-02 15:04"
+port: 7777
+db_file: store.db
+return_unmodified: false
