@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/elazarl/goproxy"
@@ -34,6 +35,10 @@ func (h *LastModifiedHandler) OnRequest(req *http.Request, ctx *goproxy.ProxyCtx
 }
 
 func (h *LastModifiedHandler) OnResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
+	if !strings.Contains(resp.Header.Get("Content-Type"), "text/html") {
+			return resp
+	}
+
 	url := ctx.Req.URL.String()
 	var buf bytes.Buffer
 	writer := bufio.NewWriter(&buf)

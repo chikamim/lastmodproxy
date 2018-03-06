@@ -10,7 +10,7 @@ import (
 func main() {
 	proxy := goproxy.NewProxyHttpServer()
 
-	website := WebSite{"www.example.com", `(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2})`, "2006-01-02 15:04", "Asia/Tokyo"}
+	website := WebSite{"apps.fujisan.co.jp/docwiki", `最終更新: (\d{4}/\d{2}/\d{2} \d{2}:\d{2})`, "2006/01/02 15:04", "Asia/Tokyo"}
 	config := &Config{[]WebSite{website}}
 	hander := NewLastModifiedHandler(NewBoldTimeStore("/tmp/teststore"), config)
 
