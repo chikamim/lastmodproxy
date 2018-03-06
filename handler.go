@@ -40,6 +40,7 @@ func (h *LastModifiedHandler) OnResponse(resp *http.Response, ctx *goproxy.Proxy
 	}
 
 	url := ctx.Req.URL.String()
+	log.Printf("Request: %v\n", url)
 	var buf bytes.Buffer
 	writer := bufio.NewWriter(&buf)
 	io.Copy(writer, resp.Body)
@@ -47,15 +48,17 @@ func (h *LastModifiedHandler) OnResponse(resp *http.Response, ctx *goproxy.Proxy
 
 	lastModified, err := h.Index.SetLastModified(url, buf.Bytes())
 	if err != nil {
-		log.Printf("Index SetLastModified error - %v\n", err)
+		log.Printf("SetLastModified error: %v\n", err)
+		return resp
 	}
 
-	origin := resp.Header.Get("Last-Modified")
-
-	if len(origin) == 0 {
-		log.Printf("Set New LastModified - %v - %v", url, lastModified.Format(time.RFC1123))
-		resp.Header.Set("Last-Modified", lastModified.Format(time.RFC1123))
-		resp.Header.Set("Cache-Control", "private")
+	if lastModified.Equal(time.Time{}) {
+		log.Println("LastModified Not Found")
+		return resp
 	}
+
+	log.Printf("LastModified Found: %v\n", lastModified.Format(time.RFC1123))
+	resp.Header.Set("Last-Modified", lastModified.Format(time.RFC1123))
+	resp.Header.Set("Cache-Control", "private")
 	return resp
 }

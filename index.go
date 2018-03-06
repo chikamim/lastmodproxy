@@ -25,16 +25,16 @@ func urlhash(url string) string {
 func (i *Index) SetLastModified(url string, body []byte) (lastModified time.Time, err error) {
 	website := i.MatchedWebsites(url)
 	if website == nil {
-		return time.Now(), errors.New("no website config found")
+		return time.Time{}, errors.New("no website config found")
 	}
 
 	re, err := regexp.Compile(website.DateMatch)
 	if err != nil {
-		return time.Now(), err
+		return time.Time{}, err
 	}
 	lastModified, err = FindTime(body, re, website.DateLayout, time.Local)
 	if err != nil {
-		return time.Now(), err
+		return time.Time{}, err
 	}
 
 	return lastModified, i.Store.Set(urlhash(url), lastModified)
