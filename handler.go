@@ -36,7 +36,7 @@ func (h *LastModifiedHandler) OnRequest(req *http.Request, ctx *goproxy.ProxyCtx
 
 func (h *LastModifiedHandler) OnResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
 	if !strings.Contains(resp.Header.Get("Content-Type"), "text/html") {
-			return resp
+		return resp
 	}
 
 	url := ctx.Req.URL.String()
@@ -51,9 +51,11 @@ func (h *LastModifiedHandler) OnResponse(resp *http.Response, ctx *goproxy.Proxy
 	}
 
 	origin := resp.Header.Get("Last-Modified")
+
 	if len(origin) == 0 {
 		log.Printf("Set New LastModified - %v - %v", url, lastModified.Format(time.RFC1123))
 		resp.Header.Set("Last-Modified", lastModified.Format(time.RFC1123))
+		resp.Header.Set("Cache-Control", "private")
 	}
 	return resp
 }

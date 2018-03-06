@@ -36,6 +36,7 @@ func (i *Index) SetLastModified(url string, body []byte) (lastModified time.Time
 	if err != nil {
 		return time.Now(), err
 	}
+
 	return lastModified, i.Store.Set(urlhash(url), lastModified)
 }
 
