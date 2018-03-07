@@ -45,6 +45,7 @@ func (h *LastModifiedHandler) OnResponse(resp *http.Response, ctx *goproxy.Proxy
 	writer := bufio.NewWriter(&buf)
 	io.Copy(writer, resp.Body)
 	bin := bytes.Replace(buf.Bytes(), []byte("nofollow"), []byte(""), -1)
+	bin = bytes.Replace(bin, []byte("noindex"), []byte(""), -1)
 	resp.Body = ioutil.NopCloser(bytes.NewReader(bin))
 
 	lastModified, err := h.Index.SetLastModified(url, buf.Bytes())
@@ -58,8 +59,13 @@ func (h *LastModifiedHandler) OnResponse(resp *http.Response, ctx *goproxy.Proxy
 		return resp
 	}
 
-	log.Printf("LastModified Found: %v\n", lastModified.Format(time.RFC1123))
-	resp.Header.Set("Last-Modified", lastModified.Format(time.RFC1123))
-	resp.Header.Set("Cache-Control", "private")
+	if len(resp.Header.Get("Last-Modified")) == 0 {
+		log.Printf("LastModified Found: %v\n", lastModified.Format(time.RFC1123))
+		resp.Header.Set("Last-Modified", lastModified.Format(time.RFC1123))
+		resp.Header.Set("Cache-Control", "private")
+	} else {
+		log.Println("Has LastModified Response")
+	}
+
 	return resp
 }
