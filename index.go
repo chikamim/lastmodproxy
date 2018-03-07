@@ -50,5 +50,12 @@ func (i *Index) MatchedWebsites(url string) *WebSite {
 }
 
 func (i *Index) GetLastModified(url string) (time.Time, error) {
-	return i.Store.Get(urlhash(url))
+	website := i.MatchedWebsites(url)
+	if website == nil {
+		return time.Time{}, errors.New("no website config found")
+	}
+	if website.ReturnUnmodified {
+		return i.Store.Get(urlhash(url))
+	}
+	return time.Time{}, errors.New("not return unmodified")
 }

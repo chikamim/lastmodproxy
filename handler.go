@@ -44,7 +44,8 @@ func (h *LastModifiedHandler) OnResponse(resp *http.Response, ctx *goproxy.Proxy
 	var buf bytes.Buffer
 	writer := bufio.NewWriter(&buf)
 	io.Copy(writer, resp.Body)
-	resp.Body = ioutil.NopCloser(bufio.NewReader(&buf))
+	bin := bytes.Replace(buf.Bytes(), []byte("nofollow"), []byte(""), -1)
+	resp.Body = ioutil.NopCloser(bytes.NewReader(bin))
 
 	lastModified, err := h.Index.SetLastModified(url, buf.Bytes())
 	if err != nil {

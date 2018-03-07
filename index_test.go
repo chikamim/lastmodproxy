@@ -7,7 +7,7 @@ import (
 func ExampleIndex() {
 	store := NewBoldTimeStore("/tmp/teststore")
 
-	website := WebSite{"www.example.com", `(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2})`, "2006-01-02 15:04", "Asia/Tokyo"}
+	website := WebSite{"www.example.com", `(\d{4}\-\d{2}\-\d{2} \d{2}:\d{2})`, "2006-01-02 15:04", "Asia/Tokyo", true}
 	index := NewIndex(store, []WebSite{website})
 	body := `Title
 Edited at 2013-12-10 12:12

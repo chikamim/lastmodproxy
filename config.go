@@ -13,10 +13,11 @@ type Config struct {
 }
 
 type WebSite struct {
-	URLFilter  string `yaml:"url_filter"`
-	DateMatch  string `yaml:"date_match"`
-	DateLayout string `yaml:"date_layout"`
-	TimeZone   string `yaml:"timezone"`
+	URLFilter        string `yaml:"url_filter"`
+	DateMatch        string `yaml:"date_match"`
+	DateLayout       string `yaml:"date_layout"`
+	TimeZone         string `yaml:"timezone"`
+	ReturnUnmodified bool   `yaml:"return_unmodified"`
 }
 
 func NewConfig(yamlpath string) (*Config, error) {

@@ -13,7 +13,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("config error - %v\n", err)
 	}
-	hander := NewLastModifiedHandler(NewBoldTimeStore("/tmp/teststore"), config.Websites)
+	hander := NewLastModifiedHandler(NewBoldTimeStore(config.DBFile), config.Websites)
 
 	proxy.OnRequest().DoFunc(hander.OnRequest)
 	proxy.OnResponse().DoFunc(hander.OnResponse)
