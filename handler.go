@@ -17,8 +17,8 @@ type LastModifiedHandler struct {
 	Index *Index
 }
 
-func NewLastModifiedHandler(store TimeStorer, websites []WebSite) *LastModifiedHandler {
-	index := NewIndex(store, websites)
+func NewLastModifiedHandler(store TimeStorer, websites []WebSite, force bool) *LastModifiedHandler {
+	index := NewIndex(store, websites, force)
 	return &LastModifiedHandler{index}
 }
 
@@ -26,7 +26,7 @@ func (h *LastModifiedHandler) OnRequest(req *http.Request, ctx *goproxy.ProxyCtx
 	url := req.URL.String()
 	lastModified, err := h.Index.GetLastModified(url)
 	if err == nil {
-		log.Printf("Index GetLastModified - %v\n", lastModified)
+		log.Printf("Return NotModified: %v\n", lastModified)
 		return req, goproxy.NewResponse(req,
 			goproxy.ContentTypeText, http.StatusNotModified,
 			"304")
@@ -46,6 +46,7 @@ func (h *LastModifiedHandler) OnResponse(resp *http.Response, ctx *goproxy.Proxy
 	io.Copy(writer, resp.Body)
 	bin := bytes.Replace(buf.Bytes(), []byte("nofollow"), []byte(""), -1)
 	bin = bytes.Replace(bin, []byte("noindex"), []byte(""), -1)
+	bin = bytes.Replace(bin, []byte("canonical"), []byte(""), -1)
 	resp.Body = ioutil.NopCloser(bytes.NewReader(bin))
 
 	lastModified, err := h.Index.SetLastModified(url, buf.Bytes())

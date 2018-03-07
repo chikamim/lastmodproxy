@@ -3,11 +3,10 @@ websites:
     date_match: "最終更新: (\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2})"
     date_layout: "2006/01/02 15:04"
     timezone: Asis/Tokyo
-    return_unmodified: false
   - url_filter: apps.fujisan.co.jp/redmine
     date_match: "title=\"(\\d{4}\\-\\d{2}\\-\\d{2} \\d{2}:\\d{2})\">([^<]+)</a>前に更新."
     date_layout: "2006-01-02 15:04"
     timezone: Asis/Tokyo
-    return_unmodified: true
 port: 7777
 db_file: store.db
+return_unmodified: false
