@@ -17,8 +17,8 @@ type LastModifiedHandler struct {
 	Index *Index
 }
 
-func NewLastModifiedHandler(store TimeStorer, config *Config) *LastModifiedHandler {
-	index := NewIndex(store, config)
+func NewLastModifiedHandler(store TimeStorer, websites []WebSite) *LastModifiedHandler {
+	index := NewIndex(store, websites)
 	return &LastModifiedHandler{index}
 }
 

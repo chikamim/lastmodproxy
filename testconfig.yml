@@ -1,9 +1,0 @@
-websites:
-  - matcher: www.doc.com
-    dateregexp: jojojo
-    datelayout: 11/27/2015
-    timezone: Asis/Tokyo
-  - matcher: www.doc.com2
-    dateregexp: jojojo
-    datelayout: 11/27/2015
-    timezone: Asis/Tokyo

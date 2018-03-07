@@ -10,12 +10,12 @@ import (
 )
 
 type Index struct {
-	Store  TimeStorer
-	Config *Config
+	Store    TimeStorer
+	Websites []WebSite
 }
 
-func NewIndex(store TimeStorer, config *Config) *Index {
-	return &Index{store, config}
+func NewIndex(store TimeStorer, websites []WebSite) *Index {
+	return &Index{store, websites}
 }
 
 func urlhash(url string) string {
@@ -41,7 +41,7 @@ func (i *Index) SetLastModified(url string, body []byte) (lastModified time.Time
 }
 
 func (i *Index) MatchedWebsites(url string) *WebSite {
-	for _, website := range i.Config.Websites {
+	for _, website := range i.Websites {
 		if strings.Contains(url, website.URLFilter) {
 			return &website
 		}
