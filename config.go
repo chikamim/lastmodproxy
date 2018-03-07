@@ -9,6 +9,7 @@ import (
 type Config struct {
 	Websites []WebSite `yaml:"websites"`
 	Port     string    `yaml:"port"`
+	DBFile   string    `yaml:"db_file"`
 }
 
 type WebSite struct {

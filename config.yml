@@ -8,3 +8,4 @@ websites:
     date_layout: "2006-01-02 15:04"
     timezone: Asis/Tokyo
 port: 7777
+db_file: store.db
