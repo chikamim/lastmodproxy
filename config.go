@@ -7,17 +7,17 @@ import (
 )
 
 type Config struct {
-	Websites []WebSite `yaml:"websites"`
-	Port     string    `yaml:"port"`
-	DBFile   string    `yaml:"db_file"`
+	Websites          []WebSite `yaml:"websites"`
+	NotModifiedPort   string    `yaml:"not_modified_port"`
+	CheckModifiedPort string    `yaml:"check_modified_port"`
+	DBFile            string    `yaml:"db_file"`
 }
 
 type WebSite struct {
-	URLFilter        string `yaml:"url_filter"`
-	DateMatch        string `yaml:"date_match"`
-	DateLayout       string `yaml:"date_layout"`
-	TimeZone         string `yaml:"timezone"`
-	ReturnUnmodified bool   `yaml:"return_unmodified"`
+	URLFilter  string `yaml:"url_filter"`
+	DateMatch  string `yaml:"date_match"`
+	DateLayout string `yaml:"date_layout"`
+	TimeZone   string `yaml:"timezone"`
 }
 
 func NewConfig(yamlpath string) (*Config, error) {

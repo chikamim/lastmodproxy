@@ -10,12 +10,13 @@ import (
 )
 
 type Index struct {
-	Store    TimeStorer
-	Websites []WebSite
+	Store      TimeStorer
+	Websites   []WebSite
+	ForceCheck bool
 }
 
-func NewIndex(store TimeStorer, websites []WebSite) *Index {
-	return &Index{store, websites}
+func NewIndex(store TimeStorer, websites []WebSite, force bool) *Index {
+	return &Index{store, websites, force}
 }
 
 func urlhash(url string) string {
@@ -51,11 +52,11 @@ func (i *Index) MatchedWebsites(url string) *WebSite {
 
 func (i *Index) GetLastModified(url string) (time.Time, error) {
 	website := i.MatchedWebsites(url)
+	if i.ForceCheck {
+		return time.Now(), errors.New("last modified force check ")
+	}
 	if website == nil {
 		return time.Time{}, errors.New("no website config found")
 	}
-	if website.ReturnUnmodified {
-		return i.Store.Get(urlhash(url))
-	}
-	return time.Time{}, errors.New("not return unmodified")
+	return i.Store.Get(urlhash(url))
 }
