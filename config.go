@@ -7,10 +7,9 @@ import (
 )
 
 type Config struct {
-	Websites          []WebSite `yaml:"websites"`
-	NotModifiedPort   string    `yaml:"not_modified_port"`
-	CheckModifiedPort string    `yaml:"check_modified_port"`
-	DBFile            string    `yaml:"db_file"`
+	Websites []WebSite `yaml:"websites"`
+	Port     string    `yaml:"port"`
+	DBFile   string    `yaml:"db_file"`
 }
 
 type WebSite struct {

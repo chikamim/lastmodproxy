@@ -6,20 +6,11 @@ import (
 	"github.com/elazarl/goproxy"
 )
 
-func StartNotModifiedProxy(config *Config) error {
+func StartLastModifiedProxy(config *Config, force bool) error {
 	proxy := goproxy.NewProxyHttpServer()
-	hander := NewLastModifiedHandler(NewBoldTimeStore(config.DBFile), config.Websites, false)
+	hander := NewLastModifiedHandler(NewBoldTimeStore(config.DBFile), config.Websites, force)
 
 	proxy.OnRequest().DoFunc(hander.OnRequest)
 	proxy.OnResponse().DoFunc(hander.OnResponse)
-	return http.ListenAndServe(":"+config.NotModifiedPort, proxy)
-}
-
-func StartCheckModifiedProxy(config *Config) error {
-	proxy := goproxy.NewProxyHttpServer()
-	hander := NewLastModifiedHandler(NewBoldTimeStore(config.DBFile), config.Websites, true)
-
-	proxy.OnRequest().DoFunc(hander.OnRequest)
-	proxy.OnResponse().DoFunc(hander.OnResponse)
-	return http.ListenAndServe(":"+config.CheckModifiedPort, proxy)
+	return http.ListenAndServe(":"+config.Port, proxy)
 }
