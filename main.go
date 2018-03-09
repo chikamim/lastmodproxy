@@ -10,5 +10,5 @@ func main() {
 		log.Fatalf("config error - %v\n", err)
 	}
 	log.Printf("Last modified proxy server at :%v\n", config.Port)
-	log.Fatalln(StartLastModifiedProxy(config, true))
+	log.Fatalln(StartLastModifiedProxy(config))
 }

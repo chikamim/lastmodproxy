@@ -9,3 +9,4 @@ websites:
     timezone: Asis/Tokyo
 port: 7777
 db_file: store.db
+return_unmodified: false

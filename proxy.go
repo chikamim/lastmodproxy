@@ -6,9 +6,9 @@ import (
 	"github.com/elazarl/goproxy"
 )
 
-func StartLastModifiedProxy(config *Config, force bool) error {
+func StartLastModifiedProxy(config *Config) error {
 	proxy := goproxy.NewProxyHttpServer()
-	hander := NewLastModifiedHandler(NewBoldTimeStore(config.DBFile), config.Websites, force)
+	hander := NewLastModifiedHandler(NewBoldTimeStore(config.DBFile), config.Websites, !config.ReturnUnmodified)
 
 	proxy.OnRequest().DoFunc(hander.OnRequest)
 	proxy.OnResponse().DoFunc(hander.OnResponse)
